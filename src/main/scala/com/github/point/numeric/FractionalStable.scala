@@ -5,7 +5,7 @@ package numeric
 /**
 	* Created by Nicolas on 24/03/2017.
 	*/
-abstract class FractionalStable[T : Fractional] extends StableTemplate[Fractional, T] {
+abstract class FractionalStable[T : Fractional] extends Stable[Fractional, T] {
 	protected val isFractional: Fractional[T] = implicitly[Fractional[T]]
 
 	trait FractionalPoint extends NumericPoint {point =>

@@ -5,7 +5,7 @@ package numeric
 /**
 	* Created by Nicolas on 24/03/2017.
 	*/
-abstract class IntegralStable[T : Integral] extends StableTemplate[Integral, T] {
+abstract class IntegralStable[T : Integral] extends Stable[Integral, T] {
 	protected val isIntegral: Integral[T] = implicitly[Integral[T]]
 
 	trait IntegralPoint extends NumericPoint {
@@ -22,6 +22,12 @@ abstract class IntegralStable[T : Integral] extends StableTemplate[Integral, T] 
 
 	class PointOfIntegral extends Integral[Repr] with IntegralPoint {
 		class IntegralPointOps(protected val lhs: Repr) extends NumericOps(lhs) with IntegralPointScalarOps
+	}
+	object PointOfIntegral {
+		def pointOfIntegral[T : Integral, Repr[X] <: point.Point[X] : IntegralStable.Of[T]#For]: IntegralStable.OfFor[T, Repr[T]]#PointOfIntegral = {
+			val n = implicitly[IntegralStable.OfFor[T, Repr[T]]]
+			new n.PointOfIntegral
+		}
 	}
 }
 

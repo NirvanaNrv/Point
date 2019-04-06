@@ -2,22 +2,46 @@ package com.github
 package point
 package numeric
 
-import scala.language.higherKinds
-import scala.language.existentials
-import com.util.using
+import scala.language.{existentials, higherKinds, reflectiveCalls}
 
 /**
 	* Created by Nicolas on 24/03/2017.
 	*/
-abstract class NumericStable[T : Numeric] extends StableTemplate[Numeric, T]
+abstract class NumericStable[T : Numeric] extends Stable[Numeric, T] {
+	class PointOfNumeric extends NumericPoint with Numeric[Repr] {
+		class NumericPointOps(protected val lhs: Repr) extends NumericOps(lhs) with NumericPointScalarOps
+	}
 
-abstract class StableTemplate[M[X] <: Numeric[X], T : M] {
-	type Repr <: Point[T]
-	val isNumeric: Numeric[T] = implicitly[Numeric[T]]
+	object PointOfNumeric {
+		def pointOfNumeric[T, Repr[X] <: point.Point[X] : NumericStable.Of[T]#For]: NumericStable.OfFor[T, Repr[T]]#PointOfNumeric = {
+			val n = implicitly[NumericStable.OfFor[T, Repr[T]]]
+			new n.PointOfNumeric
+		}
+	}
+}
 
-	def fromSeq(list: Seq[T]): Repr
+object NumericStable {
+	type Of[T] = {
+		type For[Repr[X] <: Point[X]] = OfFor[T, Repr[T]]
+		type PointOfNumeric[Repr[X] <: Point[X]] = For[Repr]#PointOfNumeric
+	}
+	type OfFor[T, _Repr <: Point[T]] = NumericStable[T] {
+		type Repr = _Repr
+	}
 
-	trait NumericPoint {point =>
+	implicit def stableToNumericStable[T : Numeric, Repr[X] <: Point[X] : StableCompanion.For]: NumericStable.Of[T]#For[Repr] = {
+		val companion = implicitly[StableCompanion.For[Repr]]
+		type ReprOfT = Repr[T]
+		new NumericStable[T] {
+			type Repr = ReprOfT
+			def fromSeq(seq: Seq[T]): Repr = companion.fromSeq(seq)
+		}
+	}
+
+	abstract class NumericPoint[M[X] <: Numeric[X], T : M, Repr <: Point[T]] {point =>
+		def fromSeq(list: Seq[T]): Repr
+		val isNumeric: Numeric[T] = implicitly[Numeric[T]]
+
 		protected def lift(op: M[T] => (T, T) => T)(x: T, y: T) = op(implicitly[M[T]])(x, y)
 		protected def opLift(op: M[T] => (T, T) => T)(x: Repr, y: Repr): Repr =
 			fromSeq((x.toList zip y.toList).map(p => lift(op)(p._1, p._2)))
@@ -64,18 +88,17 @@ abstract class StableTemplate[M[X] <: Numeric[X], T : M] {
 		}
 	}
 
-	class PointOfNumeric extends NumericPoint with Numeric[Repr] {
+	abstract class PointOfNumeric[T : Numeric, Repr <: point.Point[T]] extends NumericPoint[Numeric, T, Repr] with Numeric[Repr] {
 		class NumericPointOps(protected val lhs: Repr) extends NumericOps(lhs) with NumericPointScalarOps
 	}
-}
 
-object NumericStable {
-	trait Of[T] {
-		type For[Repr[X] <: Point[X]] = OfFor[T, Repr[T]]
-		type PointOfNumeric[Repr[X] <: Point[X]] = For[Repr]#PointOfNumeric
-	}
-	type OfFor[T, _Repr <: Point[T]] = NumericStable[T] {
-		type Repr = _Repr
+	object PointOfNumeric {
+		def pointOfNumeric[T : Numeric, Repr[X] <: point.Point[X] : NumericStable.Of[T]#For]: PointOfNumeric[T, Repr[T]] = {
+			val n = implicitly[NumericStable.OfFor[T, Repr[T]]]
+			new PointOfNumeric[T, Repr[T]] {
+				def fromSeq(list: Seq[T]) = n.fromSeq(list)
+			}
+		}
 	}
 }
 

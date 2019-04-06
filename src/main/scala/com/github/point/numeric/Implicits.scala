@@ -6,7 +6,7 @@ package numeric
 	* Created by Nicolas on 24/03/2017.
 	*/
 trait LowPriorityStableImplicits extends point.Implicits with HigherKinded {
-	implicit def stableToNumericStable[T : Numeric, Repr[X] <: Point[X] : StableCompanion.For]: NumericStable.Of[T]#For[Repr] = {
+	/*implicit def stableToNumericStable[T : Numeric, Repr[X] <: Point[X] : StableCompanion.For]: NumericStable.Of[T]#For[Repr] = {
 		val companion = implicitly[StableCompanion.For[Repr]]
 		type ReprOfT = Repr[T]
 		new NumericStable[T] {
@@ -14,10 +14,11 @@ trait LowPriorityStableImplicits extends point.Implicits with HigherKinded {
 			def fromSeq(seq: Seq[T]): Repr = companion.fromSeq(seq)
 		}
 	}
+	*/
 }
 
 trait LowPriorityClassicImplicits extends LowPriorityStableImplicits {
-	implicit def pointOfNumeric[T, Repr[X] <: point.Point[X] : NumericStable.Of[T]#For]: NumericStable.OfFor[T, Repr[T]]#PointOfNumeric = {
+	implicit def pointOfNumeric[T, Repr[X] <: point.Point[X] : NumericStable.Of[T]#For]: NumericStable.Of[T]#For[Repr]#PointOfNumeric = {
 		val n = implicitly[NumericStable.OfFor[T, Repr[T]]]
 		new n.PointOfNumeric
 	}
@@ -26,8 +27,6 @@ trait LowPriorityClassicImplicits extends LowPriorityStableImplicits {
 trait LowPriorityImplicits extends LowPriorityClassicImplicits {
 	//As I tried to use a bottom order Repr <: d.Point[T], I got inferred T of "Nothing" for Point[Int], instead of Int
 	// -> use a higher order ensuring a trivial match for the compiler from the x parameter type
-	//Direct use of the Aux pattern style fixing for Repr proves to crash the compiler
-	// -> use an abstract class (a trait would do too) instead of a type declaration: NumericStableOfFor
 	implicit def pointOfNumericOps[T, Repr[X] <: point.Point[X] : NumericStable.Of[T]#PointOfNumeric](x: Repr[T]): NumericStable.OfFor[T, Repr[T]]#PointOfNumeric#NumericPointOps = {
 		val num = implicitly[NumericStable.OfFor[T, Repr[T]]#PointOfNumeric]
 		new num.NumericPointOps(x)
