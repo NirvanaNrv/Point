@@ -20,18 +20,18 @@ abstract class IntegralStable[T : Integral] extends Stable[Integral, T] {
 		}
 	}
 
-	class PointOfIntegral extends Integral[Repr] with IntegralPoint {
-		class IntegralPointOps(protected val lhs: Repr) extends NumericOps(lhs) with IntegralPointScalarOps
+	trait PointOfIntegralImplem extends Integral[Repr] with IntegralPoint {
+		class IntegralPointOpsImplem(_lhs: Repr) extends IntegralOps(_lhs) with IntegralPointScalarOps {protected def lhs = _lhs}
+		type IntegralPointOps <: IntegralPointOpsImplem
+		def mkIntegralOpsImplem(lhs: Repr): IntegralPointOps
+		final override def mkNumericOps(lhs: Repr) = mkIntegralOpsImplem(lhs)
 	}
-	object PointOfIntegral {
-		def pointOfIntegral[T : Integral, Repr[X] <: point.Point[X] : IntegralStable.Of[T]#For]: IntegralStable.OfFor[T, Repr[T]]#PointOfIntegral = {
-			val n = implicitly[IntegralStable.OfFor[T, Repr[T]]]
-			new n.PointOfIntegral
-		}
-	}
+	type PointOfIntegral <: PointOfIntegralImplem
+	val pointOfIntegral: PointOfIntegral
+	type IntegralPointOps = pointOfIntegral.IntegralPointOps
 }
 
-object IntegralStable extends HigherKinded {
+object IntegralStable {
 	trait Of[T] {
 		type For[Repr[X] <: Point[X]] = OfFor[T, Repr[T]]
 		type PointOfIntegral[Repr[X] <: Point[X]] = For[Repr]#PointOfIntegral

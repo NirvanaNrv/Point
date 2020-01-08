@@ -1,7 +1,7 @@
-package com.github
-package point.numeric
+package com.github.point
+package numeric.standard
 
-import point.d2.standard.Point
+import d2.standard.Point
 import org.specs2.Specification
 
 /**
@@ -17,7 +17,7 @@ class ClassicNumericPointSpec extends Specification {def is = s2"""
 
 	import Numeric.Implicits._
 	import Point.Implicits._
-	import Implicits.Classic.numeric._
+	import NumericStable.pointOfNumeric
 
 	val x1 = Point(1, 2)
 	val x2 = Point(2, 3)

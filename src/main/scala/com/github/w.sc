@@ -1,21 +1,11 @@
-import scala.language.implicitConversions
-
-class Toto[T](x: T) {
-	def coucou = "coucou"
+case class Toto(x: Int) {
+	def unary_~ = x
+}
+implicit class Op(x: Toto) {
+	def toto = x
+	def ! = x
 }
 
-object Hold {
-	trait H[T]
-
-	object H {
-		implicit def getH[Int] = new H[Int] {}
-	}
-}
-
-import Hold.H
-
-implicit def toto[T : H](x: T): Toto[T] = new Toto(x)
-
-//import H._
-
-1.coucou
+val x = Toto(0)
+x.!
+x!

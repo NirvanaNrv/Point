@@ -12,6 +12,6 @@ trait Point[T] extends point.Point.Point2[T] {
 	val (_1, _2) = (x, y)
 }
 
-object Point extends HigherKinded {
+object Point extends {
 	trait Companion extends point.Point.Point2.Companion {type Bound[T] <: Point[T]}
 }

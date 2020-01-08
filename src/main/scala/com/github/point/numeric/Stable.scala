@@ -2,8 +2,6 @@ package com.github
 package point
 package numeric
 
-import language.higherKinds
-
 abstract class Stable[M[X] <: Numeric[X], T : M] {
 	type Repr <: Point[T]
 	val isNumeric: Numeric[T] = implicitly[Numeric[T]]
@@ -41,7 +39,6 @@ abstract class Stable[M[X] <: Numeric[X], T : M] {
 		}
 
 		def compare(x: Repr, y: Repr) = {
-			Ordering.Iterable(isNumeric).compare(x.toList, y.toList)
 			import Ordering.Implicits._
 			implicit val ordering: Ordering[T] = isNumeric
 			val listOrdering = implicitly[Ordering[List[T]]]

@@ -1,7 +1,7 @@
-package com.github
-package point.numeric
+package com.github.point
+package numeric.standard
 
-import point.d2.standard.Point
+import d2.standard.Point
 import org.specs2.Specification
 
 /**
@@ -15,10 +15,8 @@ class ScalarNumericPointSpec extends Specification {def is = s2"""
     (1, 2) * 2 = (2, 4)																$e2
 																											"""
 
-	//import Numeric.Implicits._
-	//That one is already included in the imported extended ops which carries the scalar operations too
 	import Point.Implicits._
-	import Implicits.Scalar.numeric._
+	import NumericStable.pointOfNumericOps
 
 	val x1 = Point(1, 2)
 	val x2 = Point(2, 3)

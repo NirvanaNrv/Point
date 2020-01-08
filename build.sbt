@@ -8,9 +8,9 @@ scalacOptions in Test ++= Seq("-Yrangepos")
 
 organization := "com.example"
 version := "1.0"
-scalaVersion := "2.13.0-pre-SNAPSHOT"
+scalaVersion := "2.13.1"
 
-libraryDependencies += "org.specs2" % "specs2-core_2.13.0-M5" % "4.3.6"
+libraryDependencies += "org.specs2" %% "specs2-core" % "4.8.1" % Test
 
 updateOptions := updateOptions.value.withLatestSnapshots(false)
 

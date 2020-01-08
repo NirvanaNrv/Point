@@ -1,11 +1,10 @@
-package com.github
-package point.d2.complex
+package com.github.point
+package d2.complex
 
-import point.d2
-import d2.complex.Point.Bound
-import point.numeric.PairNumeric
-import point.numeric.complex.NumericStable
-import language.higherKinds
+import Point.Bound
+import numeric.PairNumeric
+import numeric.complex.NumericStable
+import numeric.complex.IntegralStable
 
 /**
 	* Created by Nicolas on 15/03/2017.
@@ -45,9 +44,17 @@ object Point extends d2.Point.Companion {companion =>
 		implicit def makePairNumeric[T, U](implicit evT: Numeric[T], evU: Numeric[U]): Numeric[(T, U)] = new PairNumeric
 	}
 	object Implicits {
-		implicit def toNumericStable[T : Numeric]: point.numeric.complex.NumericStable.OfFor[T, Repr[T]] = {
+		implicit def toNumericStable[T : Numeric]: numeric.complex.NumericStable.OfFor[T, Repr[T]] = {
 			type ReprOfT = Repr[T]
 			new NumericStable {
+				type Repr = ReprOfT
+				def fromSeq(seq: Seq[T]): Repr = companion.fromSeq(seq)
+			}
+		}
+
+		implicit def toIntegralStable[T : Integral]: numeric.complex.IntegralStable.OfFor[T, Repr[T]] = {
+			type ReprOfT = Repr[T]
+			new IntegralStable {
 				type Repr = ReprOfT
 				def fromSeq(seq: Seq[T]): Repr = companion.fromSeq(seq)
 			}

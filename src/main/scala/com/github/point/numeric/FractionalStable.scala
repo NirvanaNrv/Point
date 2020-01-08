@@ -18,12 +18,19 @@ abstract class FractionalStable[T : Fractional] extends Stable[Fractional, T] {
 		}
 	}
 
-	class PointOfFractional extends Fractional[Repr] with FractionalPoint {
-		class FractionalPointOps(protected val lhs: Repr) extends NumericOps(lhs) with FractionalPointScalarOps
+	trait PointOfFractionalImplem extends Fractional[Repr] with FractionalPoint {
+		class FractionalPointOpsImplem(_lhs: Repr) extends FractionalOps(_lhs) with FractionalPointScalarOps {protected def lhs = _lhs}
+		type FractionalPointOps <: FractionalPointOpsImplem
+		def mkFractionalOpsImplem(lhs: Repr): FractionalPointOps
+		final override def mkNumericOps(lhs: Repr) = mkFractionalOpsImplem(lhs)
+
 	}
+	type PointOfFractional <: PointOfFractionalImplem
+	val pointOfFractional: PointOfFractional
+	type FractionalPointOps = pointOfFractional.FractionalPointOps
 }
 
-object FractionalStable extends HigherKinded {
+object FractionalStable {
 	trait Of[T] {
 		type For[Repr[X] <: Point[X]] = OfFor[T, Repr[T]]
 		type PointOfFractional[Repr[X] <: Point[X]] = For[Repr]#PointOfFractional
