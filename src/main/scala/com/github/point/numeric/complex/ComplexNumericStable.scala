@@ -9,7 +9,7 @@ import scala.language.implicitConversions
 /**
 	* Created by Nicolas on 24/03/2017.
 	*/
-abstract class NumericStable[T : Numeric] extends ComplexNumericStable[T] {
+abstract class ComplexNumericStable[T : Numeric] extends numeric.NumericStable[T] {
 	type Repr <: Point[T]
 
 	trait NumericPoint extends super.NumericPoint {point =>
@@ -46,26 +46,5 @@ abstract class NumericStable[T : Numeric] extends ComplexNumericStable[T] {
 		def mkNumericOpsImplem(lhs: Repr) = new NumericPointOpsImplem(lhs)
 	}
 
-	type PointOfNumeric = PointOfNumericImplem
-	val pointOfNumeric = new PointOfNumericImplem
-}
-
-object NumericStable {
-	trait Of[T] {
-		type For[Repr[X] <: Point[X]] = OfFor[T, Repr[T]]
-		type PointOfNumeric[Repr[X] <: Point[X]] = For[Repr]#PointOfNumeric
-	}
-	type OfFor[T, _Repr <: Point[T]] = NumericStable[T] {
-		type Repr = _Repr
-	}
-
-	implicit def pointOfNumeric[T, Repr[X] <: Point[X] : Of[T]#For]: Of[T]#For[Repr]#PointOfNumeric = {
-		val n = implicitly[NumericStable.OfFor[T, Repr[T]]]
-		n.pointOfNumeric
-	}
-
-	implicit def pointOfNumericOps[T, Repr[X] <: Point[X] : Of[T]#For](x: Repr[T]): NumericStable.OfFor[T, Repr[T]]#NumericPointOps = {
-		val numericStable = implicitly[NumericStable.OfFor[T, Repr[T]]]
-		numericStable.pointOfNumeric.mkNumericOpsImplem(x)
-	}
+	type PointOfNumeric <: PointOfNumericImplem
 }

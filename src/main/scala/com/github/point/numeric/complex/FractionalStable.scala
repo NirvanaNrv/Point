@@ -33,7 +33,7 @@ object FractionalStable {
 		}
 	}
 
-	implicit def pointOfFractional[T : Integral, Repr[X] <: point.Point[X] : Of[T]#For]: OfFor[T, Repr[T]]#PointOfFractional = {
+	implicit def pointOfFractional[T : Fractional, Repr[X] <: point.Point[X] : Of[T]#For]: OfFor[T, Repr[T]]#PointOfFractional = {
 		val n = implicitly[OfFor[T, Repr[T]]]
 		new n.PointOfFractional
 	}

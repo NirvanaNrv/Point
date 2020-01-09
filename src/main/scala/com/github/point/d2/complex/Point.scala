@@ -3,8 +3,7 @@ package d2.complex
 
 import Point.Bound
 import numeric.PairNumeric
-import numeric.complex.NumericStable
-import numeric.complex.IntegralStable
+import numeric.complex.{FractionalStable, IntegralStable, NumericStable}
 
 /**
 	* Created by Nicolas on 15/03/2017.
@@ -55,6 +54,14 @@ object Point extends d2.Point.Companion {companion =>
 		implicit def toIntegralStable[T : Integral]: numeric.complex.IntegralStable.OfFor[T, Repr[T]] = {
 			type ReprOfT = Repr[T]
 			new IntegralStable {
+				type Repr = ReprOfT
+				def fromSeq(seq: Seq[T]): Repr = companion.fromSeq(seq)
+			}
+		}
+
+		implicit def toFractionalStable[T : Fractional]: numeric.complex.FractionalStable.OfFor[T, Repr[T]] = {
+			type ReprOfT = Repr[T]
+			new FractionalStable {
 				type Repr = ReprOfT
 				def fromSeq(seq: Seq[T]): Repr = companion.fromSeq(seq)
 			}
